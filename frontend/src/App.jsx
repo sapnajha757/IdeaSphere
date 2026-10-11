@@ -2,7 +2,12 @@ import React from 'react';
 import Navbar from './components/Navbar';
 import IdeaCard from './components/IdeaCard';
 import { useState } from 'react';
-const ideas = [
+
+const App = () => {
+    const [search, setSearch] = useState("");
+    const [showForm, setShowForm] = useState(false);
+    const [ideas, setIdeas]= useState([
+      
   {
     id: 1,
     title: "AI Study Planner",
@@ -24,16 +29,16 @@ const ideas = [
     category: "Community",
     likes: 15
   }
-];
-
-const App = () => {
-    const [search, setSearch] = useState("");
+]);
+    const [newTitle, setNewTitle] = useState("");
+    const [newDescription, setNewDescription] = useState("");
+    const [newCategory, setNewCategory] = useState("Education");
     const filteredIdeas = ideas.filter((idea)=>
         idea.title.toLowerCase().includes(search.toLowerCase())
     );
   return (
     <div className="min-h-screen bg-slate-50">
-      <Navbar />
+      <Navbar onCreateClick={()=> setShowForm(true)}/>
       
       <input
       className="mb-6 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-200"
@@ -44,6 +49,56 @@ const App = () => {
       />
 
       <main className="mx-auto max-w-6xl p-6">
+        {showForm && (
+          <div className="mb-6 rounded-xl bg-white p-6 shadow-sm">
+            <h2 className="text-xl font-bold text-slate-800">Create a new idea</h2>
+           <input
+           type="text"
+           value={newTitle}
+           onChange={(event)=>setNewTitle(event.target.value)}
+           placeholder="Enter your idea title"
+           className="mt-4 w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:border-purple-500"
+           />
+          <textarea
+          value={newDescription}
+          onChange={(event)=>setNewDescription(event.target.value)}
+          placeholder="Describe your idea..."
+          rows={4}
+          className="mt-4 w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:border-purple-500"
+          />
+          <select 
+          value={newCategory}
+          onChange={(event)=>setNewCategory(event.target.value)}
+          className="mt-4 w-full rounded-xl border border-slate-300 bg-white px-4 py-3"
+          >
+            <option value="Education">Education</option>
+            <option value="Environment">Environment</option>
+            <option value="Community">Community</option>
+            <option value="Technology">Technology</option>
+          </select>
+          <button
+          onClick={()=>{
+           if(newTitle.trim()===""||newDescription.trim()===""){
+            alert("Please enter a title and description");
+            return;
+           }
+           const newIdeas = {
+            id: Date.now(),
+            title: newTitle,
+            description: newDescription,
+            category: newCategory,
+            likes: 0
+           };
+           setIdeas([...ideas, newIdeas]);
+           setNewTitle("");
+           setNewDescription("");
+           setShowForm(false);
+          }}
+          className="mt-4 rounded-xl bg-purple-600 px-6 py-3 font-semibold text-white hover:bg-purple-700"
+          >Submit Ideas</button>
+          </div>
+        )}
+        
         <h1 className="mb-6 text-3xl font-bold text-slate-800">
           Explore Ideas
         </h1>
